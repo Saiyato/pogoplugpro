@@ -4,7 +4,7 @@ The Pogoplug era is long gone, all necessary services have been retired, so it's
 Ok, so what are we talking about, and what are the requirements?
 
 1. We need access to the terminal
-2. We need to flash a new uBoot
+2. We need to flash a new bootloader
 3. We need to create an Ubuntu filesystem to boot from (the NAND only has 128MB)
 4. We would like WiFi to be operational
 5. We could install something like OMV (OpenMediaVault)
@@ -25,7 +25,32 @@ Stop bits: 1
 Parity: None
 Flow control: None
 ```
-## 4. Enable WiFi
+
+If you want to enable SSH, you can just edit the */etc/init.d/rcS* file.
+First remount the rootfs with read/write using this command `mount -o remount,rw /` and edit `/etc/init.d/rcS` (you must use vi, nano is not yet an option). Comment out `/etc/init.d/hbmgr.sh start` by placing a pound sign before it (like this `#/etc/init.d/hbmgr.sh start`) and add this on a new line `/usr/sbin/dropbear`. This will disable loading the standard Pogoplug software, but instead just load dropbear (and enable SSH).
+
+## 2. We need to flash a new bootloader
+Someone else can probably tell you exactly what it does, and what it's for. I will stick to the necessary parts... you need to update it for more freedom and fun.
+First things first, let's see if our hardware is Oxsemi, otherwise, just stop right there.
+```
+#Verify Pogoplug is expected version (Oxnas)
+cat /proc/cpuinfo | grep Hardware
+
+#Stop here if not expected output.
+#Expected output
+#Hardware : Oxsemi NAS
+
+#stop my.pogoplug.com service
+killall hbwd
+```
+Now that's out of the way, we need some tools (see tools tarball in this repo).
+
+md5:
+e58f442411eb35e641d40ea0577e00ff linux-tools-installation-bodhi.tar.gz
+sha256:
+88dfa8eadb319e2e286320643a654bf89bff0b0d450562fce09938e7f3b0007d linux-tools-installation-bodhi.tar.gz 
+
+## 4. We would like WiFi to be operational
 If */etc/apt/sources.list* does not containt `deb http://ftp.us.debian.org/debian buster main non-free`, add it and run `apt-get update`.
 
 In order to control the WiFi device, we will need some packages. Install them using the following command:
