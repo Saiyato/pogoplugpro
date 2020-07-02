@@ -61,6 +61,7 @@ iface wlp0s0 inet dhcp
 ```
 
 Test your configuration afterwards with `ifup -v wlp0s0`, you should be seeing some DHCP activity and an assigned IP address.
+Note: you will need to add this info again if you've installed OMV afterwards.
 
 #### Enable auto-connect after boot
 Luckily someone already did the heavy lifting for this, you can just download the WiFi_Check script from this repo
