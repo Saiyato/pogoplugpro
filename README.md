@@ -305,3 +305,44 @@ apt-get install cron
 crontab -e
 */3 * * * * /usr/local/bin/WiFi_Check
 ```
+
+## 5. We could install something like OMV (OpenMediaVault)
+Ok, I must warn you, it's not super stable, but hey... at least it's something. I've found the script contents on a OMV forum, it's for testers, so nothing is confirmed to be working. Also I needed to create a swap file for the installation to succeed.
+```
+#create a 512 MB file called /swapfile. This will be our swap file.
+dd if=/dev/zero of=/swapfile bs=1M count=512
+
+#set file permission, don't be too permissive!
+chmod 600 /swapfile
+
+#format it to swap
+mkswap /swapfile
+
+#activate the swap file
+swapon /swapfile
+```
+Then make the swap file persistent in /etc/fstab
+```
+#add swap file
+/swapfile none swap defaults 0 0
+```
+
+Now we can get crackin' on the installation
+```
+#download the script
+wget https://raw.githubusercontent.com/Saiyato/pogoplugpro/master/install_omv.sh
+
+#make it executable
+chmod +x https://raw.githubusercontent.com/Saiyato/pogoplugpro/master/install_omv.sh
+
+#run it (takes a while!)
+sh install_omv.sh
+```
+
+Afterwards just init and populate the db
+```
+#initialize
+
+#populate the database.
+omv-confdbadm populate
+```
