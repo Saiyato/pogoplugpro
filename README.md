@@ -13,4 +13,15 @@ Ok, so what are we talking about, and what are the requirements?
 Back in the days, when you could still boot the little device, you could use a 'secret' command to enable dropbear (and SSH). But, unfortunately, because all services have retired, this will not work anymore (at least, I tried and failed in many occassions).
 
 The command is: `curl -k “https://root:ceadmin@[PogoplugIPAddress]/sqdiag/HBPlug?action=command&command=dropbear%20start”`
-You need to change the [PogoplugIPAddress] part with the IP-address of your device of course.
+You need to change the `[PogoplugIPAddress]` part with the IP-address of your device of course.
+
+So, that's a no go... how do I go about it then? Well you can connect to the board and use the serial connection instead. You will need to open up the device and get your hands on a *JST 2.0mm PH 4-Pin* connector (you can open up some old devices to see if you can find a matching cable, connecting dupont cables wont work, unless you solder them).
+
+######Connection settings
+```
+Speed: 115200
+Data bits: 8
+Stop bits: 1
+Parity: None
+Flow control: None
+```
