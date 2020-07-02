@@ -66,7 +66,7 @@ Test your configuration afterwards with `ifup -v wlp0s0`, you should be seeing s
 Luckily someone already did the heavy lifting for this, you can just download the WiFi_Check script from this repo
 ```
 cd /usr/local/bin/
-wget --no-check-certificate https://raw.githubusercontent.com/dweeber/WiFi_Check/master/WiFi_Check
+wget --no-check-certificate https://raw.githubusercontent.com/Saiyato/pogoplugpro/master/WiFi_Check
 chmod +x WiFi_Check
 
 apt-get install cron
