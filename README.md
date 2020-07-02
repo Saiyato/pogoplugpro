@@ -307,7 +307,7 @@ crontab -e
 ```
 
 ## 5. We could install something like OMV (OpenMediaVault)
-Ok, I must warn you, it's not super stable, but hey... at least it's something. I've found the script contents on a OMV forum, it's for testers, so nothing is confirmed to be working. Also I needed to create a swap file for the installation to succeed.
+Ok, I must warn you, it's slooooooow, but hey... at least it's something. I've found the script contents on a OMV forum, it's for testers, so nothing is confirmed to be working. Also I needed to create a swap file for the installation to succeed.
 ```
 #create a 512 MB file called /swapfile. This will be our swap file.
 dd if=/dev/zero of=/swapfile bs=1M count=512
