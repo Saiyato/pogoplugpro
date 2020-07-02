@@ -50,6 +50,26 @@ e58f442411eb35e641d40ea0577e00ff linux-tools-installation-bodhi.tar.gz
 sha256:
 88dfa8eadb319e2e286320643a654bf89bff0b0d450562fce09938e7f3b0007d linux-tools-installation-bodhi.tar.gz 
 
+Download the tools to */tmp* and make them executable `chmod +x flash_erase fw_printenv fw_setenv nanddump nandwrite`. Setup fw_env.config and backup old envs:
+```
+#remount '/' as read/write
+#by default the Pogoplug OS (internal flash) is read only
+mount -o remount,rw /
+
+#setup fw_env.config for oxnas
+echo "/dev/mtd0 0x00100000 0x20000 0x20000">/etc/fw_env.config
+
+#save original envs
+/usr/local/cloudengines/bin/blparam > /blparam.txt
+```
+
+Download the latest uboot tarball and verify hash (uboot.2015.10-tld-2.ox820.bodhi.tar can be found in this repo).
+
+md5sum
+c8d52236f906fd7fc8c84d15562331b0
+sha256sum
+d9e034f70a3c40d6a970084c858e8890989e0d40d11699dc488e3dd852092aad 
+
 ## 4. We would like WiFi to be operational
 If */etc/apt/sources.list* does not containt `deb http://ftp.us.debian.org/debian buster main non-free`, add it and run `apt-get update`.
 
