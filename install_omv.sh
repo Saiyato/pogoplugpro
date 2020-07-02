@@ -25,11 +25,3 @@ apt-get --yes --auto-remove --show-upgraded \
         --option Dpkg::Options::="--force-confdef" \
         --option DPkg::Options::="--force-confold" \
         install openmediavault-keyring openmediavault
-
-
-# Populate the database.
-omv-confdbadm populate
-
-
-# Display the login information.
-cat /etc/issue
