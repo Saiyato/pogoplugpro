@@ -17,7 +17,7 @@ You need to change the `[PogoplugIPAddress]` part with the IP-address of your de
 
 So, that's a no go... how do I go about it then? Well you can connect to the board and use the serial connection instead. You will need to open up the device and get your hands on a *JST 2.0mm PH 4-Pin* connector (you can open up some old devices to see if you can find a matching cable, connecting dupont cables wont work, unless you solder them).
 
-######Connection settings
+###### Connection settings
 ```
 Speed: 115200
 Data bits: 8
