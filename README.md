@@ -5,7 +5,7 @@ Ok, so what are we talking about, and what are the requirements?
 
 1. We need access to the terminal
 2. We need to flash a new bootloader
-3. We need to create an Ubuntu filesystem to boot from (the NAND only has 128MB)
+3. We need to create an Debian filesystem to boot from (the NAND only has 128MB)
 4. We would like WiFi to be operational
 5. We could install something like OMV (OpenMediaVault)
 
