@@ -43,7 +43,9 @@ cat /proc/cpuinfo | grep Hardware
 #stop my.pogoplug.com service
 killall hbwd
 ```
+
 Now that's out of the way, we need some tools (see tools tarball in this repo).
+`wget https://github.com/Saiyato/pogoplugpro/raw/master/linux-tools-installation-bodhi.tar.gz`
 
 md5:
 e58f442411eb35e641d40ea0577e00ff linux-tools-installation-bodhi.tar.gz
@@ -69,6 +71,55 @@ md5sum
 c8d52236f906fd7fc8c84d15562331b0
 sha256sum
 d9e034f70a3c40d6a970084c858e8890989e0d40d11699dc488e3dd852092aad 
+
+```
+#extract uBoot files
+tar -xf uboot.2013.10-tld-4.ox820.bodhi.tar
+```
+
+Now the fun starts, carefully copy the commands, you don't want to brick your device, right?
+```
+#BE EXTRA CAREFUL WITH THE THESE COMMANDS.
+#NO TYPOS! CUT AND PASTE.
+#Erase and flash uboot on mtd0
+#Flash encoded spl stage1 to 0x0
+/tmp/flash_erase /dev/mtd0 0x0 6
+/tmp/nandwrite /dev/mtd0 uboot.spl.2013.10.ox820.850mhz.mtd0.img
+
+#Flash uboot to 0x40000
+/tmp/nandwrite -s 262144 /dev/mtd0 uboot.2013.10-tld-4.ox820.mtd0.img
+#Flash uboot environment
+#Erase 1 block starting 0x00100000
+/tmp/flash_erase /dev/mtd0 0x00100000 1
+/tmp/nandwrite -s 1048576 /dev/mtd0 pogopro_uboot_env.img
+
+#Set MAC Address
+/tmp/fw_setenv ethaddr "$(cat /sys/class/net/eth0/address)"
+```
+
+Optionally default to Pogoplug classic dtb.
+```
+#default to pogoplug classic dtb
+/tmp/fw_setenv fdt_file '/boot/dts/ox820-pogoplug-classic.dtb'
+/tmp/fw_setenv dt_load_dtb 'ext2load usb 0:1 $dtb_addr $fdt_file'
+```
+
+Check your MAC address and verify that there are no errors in the uboot env params.
+```
+#double check the MAC Address matches with
+#what is on the bottom of your Pogoplug
+/tmp/fw_printenv ethaddr
+
+#print out all uboot environment parameters
+#make sure there are no errors
+/tmp/fw_printenv > /fw_printenv.txt
+/tmp/fw_printenv
+```
+
+I've use the serial cable for the entire process, but you can use netconsole I support. See this post: https://forum.doozan.com/read.php?3,14,14
+
+## 3. We need to create an Ubuntu filesystem to boot from (the NAND only has 128MB)
+
 
 ## 4. We would like WiFi to be operational
 If */etc/apt/sources.list* does not containt `deb http://ftp.us.debian.org/debian buster main non-free`, add it and run `apt-get update`.
