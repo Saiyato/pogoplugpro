@@ -118,8 +118,101 @@ Check your MAC address and verify that there are no errors in the uboot env para
 
 I've use the serial cable for the entire process, but you can use netconsole I support. See this post: https://forum.doozan.com/read.php?3,14,14
 
-## 3. We need to create an Ubuntu filesystem to boot from (the NAND only has 128MB)
+## 3. We need to create an Ubuntu filesystem to boot from
+This one's actually very easy, you just need some patience. Format a disk, I used a USB flash drive for the matter.
+Mount the disk to anywhere, I used the below.
+```
+#note, sda is the usb flash drive
+#partition your USB flash/hard drive
+/sbin/fdisk /dev/sda
 
+# Type in the following commands to erase
+# and re-partition USB flash/hard drive
+#(WARNING - FLASH/HARD DRIVE WILL BE COMPLETELY WIPED):
+#
+# p # list current partitions
+# o # to delete all partitions
+# n # new partition
+# p # primary partition
+# 1 (one) # first partition
+# <enter> # default start block
+# <enter> # default end block (to use the whole drive)
+# If you're using a hard drive, create a small
+# 4GB partition instead of using the whole drive,
+# leaving the rest for a data partition
+# +4G # to create a 4GB partition
+# w # write new partition to disk
+
+#format USB Flash Drive
+cd /tmp
+wget https://raw.githubusercontent.com/Saiyato/pogoplugpro/master/mke2fs
+chmod 755 mke2fs
+
+#format as ext3 and label partition as 'rootfs'
+./mke2fs -L rootfs -j /dev/sda1
+
+#mount
+mkdir /tmp/usb
+mount /dev/sda1 /tmp/usb
+```
+Download the Debian rootfs, you can find the latest here: https://forum.doozan.com/read.php?2,16044
+Or source your own of course.
+```
+#Download Debian rootfs (this will take a while)
+wget https://www.dropbox.com/s/rtghye0ll247vm5/Debian-4.14.180-oxnas-tld-1-rootfs-bodhi.tar.bz2
+```
+As always, verify!
+
+md5:
+a1204e4bd6d3b129d525bf18421cd3bb
+sha256:
+ea58957c269826f3b487606929148ddfd11fc512ae20de4088a9196b06238212 
+
+###### Information
+Basic Debian buster Oxnas rootfs for Popo Pro/Classic V3 and other OX820 NAS.
+
+- tarball size: 187M
+- install size: 497M
+- Installed packages: nano, avahi, ntp, busybox-syslogd (log to RAM), htop, dialog, bz2, iperf, ethtool, sysvinit-core, sysvinit, sysvinit-utils, mtd-utils, u-boot-tools.
+- see LED controls in /etc/rc.local, and /etc/rc0.d/K08halt
+- see some useful aliases in /root/.profile
+- root password: root 
+
+Unpack the contents, note this will take a long while...
+```
+#unpack
+tar -xvjf Debian-4.14.180-oxnas-tld-1-rootfs-bodhi.tar.bz2
+
+#cleanup
+rm Debian-4.14.180-oxnas-tld-1-rootfs-bodhi.tar.bz2
+
+#sync and reboot, cross your fingers
+sync
+cd ..
+umount /tmp/usb
+reboot
+```
+
+#### Basic setup tasks after it boots back up
+```
+#Change password
+passwd
+
+#Generate New OpenSSH Keys
+rm /etc/ssh/ssh_host*
+ssh-keygen -A
+
+#Initial update
+apt-get update
+apt-get upgrade
+
+#Set hostname to DebianPlug or whatever you like
+echo DebianPlug>/etc/hostname
+
+#Set Time Zone
+tzselect
+reboot
+```
 
 ## 4. We would like WiFi to be operational
 If */etc/apt/sources.list* does not containt `deb http://ftp.us.debian.org/debian buster main non-free`, add it and run `apt-get update`.
