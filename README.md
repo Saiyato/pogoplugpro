@@ -76,23 +76,62 @@ d9e034f70a3c40d6a970084c858e8890989e0d40d11699dc488e3dd852092aad
 #extract uBoot files
 tar -xf uboot.2013.10-tld-4.ox820.bodhi.tar
 ```
+Be sure there is no bad block in the first 2M of your NAND (check dmesg for bad block 0 to 15). This is very important, if there is bad block in the first 2M, don't flash u-boot, because you will almost certainly brick your box.
+`dmesg | grep -i 'bad'`
 
 Now the fun starts, carefully copy the commands, you don't want to brick your device, right?
+```
+#first backup your current NAND, e.g. to /dev/mtd0
+nanddump --noecc --omitoob -f mtd0  /dev/mtd0
+```
+
+Erase the NAND (careful now!)
 ```
 #BE EXTRA CAREFUL WITH THE THESE COMMANDS.
 #NO TYPOS! CUT AND PASTE.
 #Erase and flash uboot on mtd0
 #Flash encoded spl stage1 to 0x0
 /tmp/flash_erase /dev/mtd0 0x0 6
-/tmp/nandwrite /dev/mtd0 uboot.spl.2013.10.ox820.850mhz.mtd0.img
+```
+Expected output:
+*Erase Total 6 Units
+Performing Flash Erase of length 131072 at offset 0xa0000 done*
 
+Flash encoded spl stage1 to 0x0
+`/tmp/nandwrite /dev/mtd0 uboot.spl.2013.10.ox820.850mhz.mtd0.img`
+Expected output:
+*Writing data to block 0 at offset 0x0*
+
+Flash uboot to 0x40000
+```
 #Flash uboot to 0x40000
 /tmp/nandwrite -s 262144 /dev/mtd0 uboot.2013.10-tld-4.ox820.mtd0.img
+```
+Expected output:
+*Writing data to block 2 at offset 0x40000
+Writing data to block 3 at offset 0x60000
+Writing data to block 4 at offset 0x80000
+Writing data to block 5 at offset 0xa0000*
+
+Erase 1 block
+```
 #Flash uboot environment
 #Erase 1 block starting 0x00100000
 /tmp/flash_erase /dev/mtd0 0x00100000 1
-/tmp/nandwrite -s 1048576 /dev/mtd0 pogopro_uboot_env.img
+```
+Expected output:
+*Erase Total 1 Units
+Performing Flash Erase of length 131072 at offset 0x100000 done*
 
+Flash uboot environment to 0x00100000
+`/tmp/nandwrite -s 1048576 /dev/mtd0 pogopro_uboot_env.img`
+Expected output:
+*Writing data to block 8 at offset 0x100000*
+
+YAY! New uBoot has been flashed!
+
+Set the HW MAC address
+```
 #Set MAC Address
 /tmp/fw_setenv ethaddr "$(cat /sys/class/net/eth0/address)"
 ```
@@ -103,6 +142,8 @@ Optionally default to Pogoplug classic dtb.
 /tmp/fw_setenv fdt_file '/boot/dts/ox820-pogoplug-classic.dtb'
 /tmp/fw_setenv dt_load_dtb 'ext2load usb 0:1 $dtb_addr $fdt_file'
 ```
+Or the Pogoplug Pro (for wireless functionality), note a non-pro will not boot!
+`/tmp/fw_setenv fdt_file '/boot/dts/ox820-pogoplug-pro.dtb'`
 
 Check your MAC address and verify that there are no errors in the uboot env params.
 ```
